@@ -12,16 +12,6 @@ import torch.optim as optim
 from torch.autograd import Variable
 from xavier import xavier
 
-def identity(params):
-	for p in params.parameters():
-		if p.data.ndimension() == 2 and p.data.size(0) == p.data.size(1):
-			p.data.copy_(torch.eye(p.data.size(0)))
-		elif p.data.ndimension() == 2:
-			init.xavier_uniform(p.data)
-		else:
-			p.data.fill_(0.1)
-	return params
-
 class highway_layer(nn.Module):
 	def __init__(self, num_layers, sz, transfer, bias, dropout):
 		super(highway_layer, self).__init__()
@@ -32,8 +22,8 @@ class highway_layer(nn.Module):
 		self.dropout = dropout
 
 		self.dropouts = [nn.Dropout(dropout) for i in xrange(0, num_layers)]
-		self.gate_linears = [identity(nn.Linear(sz, sz)) for i in xrange(0, num_layers)]
-		self.transfer_linears = [identity(nn.Linear(sz, sz)) for i in xrange(0, num_layers)]
+		self.gate_linears = [xavier(nn.Linear(sz, sz)) for i in xrange(0, num_layers)]
+		self.transfer_linears = [xavier(nn.Linear(sz, sz)) for i in xrange(0, num_layers)]
 		self.transfer_functions = [transfer for i in xrange(0, num_layers)]
 
 		for i in xrange(0, num_layers):

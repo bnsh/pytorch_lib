@@ -5,15 +5,19 @@ Let's start off with this list:
 	# BinaryStochastic.lua
 	# HighwayLayer.lua
 	# Nullable.lua
-	# Random.lua
 	# SpatialDropoutX21.lua
-	# Zero.lua
 
 Ordered:
 	# 2017-06-17: HighwayLayer.lua
-	# ????-??-??: BinaryStochastic.lua
-	# ????-??-??: SpatialDropoutX21.lua
-	# ????-??-??: AddGaussian.lua
-	# ????-??-??: Nullable.lua
-	# ????-??-??: Random.lua
-	# ????-??-??: Zero.lua
+	# 2017-06-17: BinaryStochastic.lua
+	# 2017-06-17: AddGaussian.lua
+	# 2017-06-18: Nullable.lua -- Perhaps this needs more rigorous testing tho
+
+Not needed:
+	# 2017-06-17: SpatialDropoutX21.lua
+		So, the reason I needed SpatialDropoutX21 was because
+		luatorch's SpatialDropout didn't premultiply by (1/(1-p))
+		pytorch's nn.Dropout2d _does_ premultiply... So, this is not
+		needed anymore.
+	# 2017-06-18: Random.lua -- Let's see how far we can get without implementing these.
+	# 2017-06-18: Zero.lua
