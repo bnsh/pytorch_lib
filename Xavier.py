@@ -11,4 +11,3 @@ def xavier(params):
 		else:
 			param.data.fill_(1.0)
 	return params
-

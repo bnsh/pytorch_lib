@@ -6,6 +6,7 @@ import torch.nn as nn
 from torch.autograd import Variable
 
 class AddGaussian(nn.Module):
+	# pylint: disable=too-few-public-methods
 	def __init__(self, mean, sigma):
 		super(AddGaussian, self).__init__()
 		self.mean = mean
@@ -16,5 +17,4 @@ class AddGaussian(nn.Module):
 		if self.training:
 			noise = Variable(data.data.clone().normal_(self.mean, self.sigma), requires_grad=False)
 			return data + noise
-		else:
-			return data
+		return data
