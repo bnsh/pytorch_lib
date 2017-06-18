@@ -28,7 +28,6 @@ class SpatialCrossMapLRN(nn.Module):
 		self.beta = beta
 		self.k = k
 
-	#pylint: disable=too-many-locals
 	def forward(self, *rawdata):
 		inp, = rawdata
 
