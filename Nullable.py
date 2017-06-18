@@ -19,10 +19,7 @@ class Nullable(nn.Module):
 		portion = self.real_module(data.index_select(0, nonzero))
 		size = list(portion.size())
 		size = [len(indicators)] + size[1:]
-		# I don't know why pylint complains about torch not having zeros
-		# pylint: disable=no-member
 		returnvalue = Variable(torch.zeros(size))
 		self.filler(self.training, returnvalue)
 		returnvalue.index_copy_(0, nonzero, portion)
 		return returnvalue
-
