@@ -22,9 +22,9 @@ def identity(params):
 			p.data.fill_(0.1)
 	return params
 
-class HighwayLayer(nn.Module):
+class highway_layer(nn.Module):
 	def __init__(self, num_layers, sz, transfer, bias, dropout):
-		super(HighwayLayer, self).__init__()
+		super(highway_layer, self).__init__()
 		self.num_layers = num_layers
 		self.sz = sz
 		self.transfer = transfer
@@ -55,7 +55,7 @@ class HighwayLayer(nn.Module):
 		return rv
 
 def main():
-	hl = HighwayLayer(1,16,nn.RReLU(), 0, 0)
+	hl = highway_layer(1,16,nn.RReLU(), 0, 0)
 	hl.train(False)
 	data = Variable(torch.Tensor(np.arange(-8.0, 8.0, 1).reshape(1,16)))
 	print hl(data)
