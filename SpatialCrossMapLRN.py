@@ -33,23 +33,23 @@ class SpatialCrossMapLRN(nn.Module):
 
 		is_batch = True
 		if inp.dim() == 3:
-			#pylint: disable=no-member
 			inp = torch.unsqueeze(inp, 0)
 			is_batch = False
 
 		channels = inp.size(1)
 
-		output = Variable(torch.Tensor(inp.data.size()).type(inp.data.type()).zero_())
+		channel_lrns = []
 
 		for channel in xrange(0, channels):
 			lower_bound = max(0, channel-math.floor(self.size/2.0))
 			upper_bound = min(channels-1, channel+math.floor(self.size/2.0))
 
 			numerator = inp.select(1, channel)
-			#pylint: disable=no-member
 			denominator = torch.pow((self.k + (self.alpha/self.size) * torch.pow(inp.index_select(1, Variable(torch.arange(lower_bound, upper_bound+1).type(torch.LongTensor), requires_grad=False)), 2)).sum(1), self.beta)
 			back = (numerator/denominator).unsqueeze(1)
-			output.index_copy_(1, Variable(torch.LongTensor([channel])), back)
+			channel_lrns.append(back)
+
+		output = torch.cat(channel_lrns, 1)
 
 		if not is_batch:
 			output = output[0]
