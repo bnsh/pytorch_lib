@@ -1,0 +1,19 @@
+So, basically we need to implement _most_ of what's in torch7-libv2 here.
+Let's start off with this list:
+
+	# AddGaussian.lua
+	# BinaryStochastic.lua
+	# HighwayLayer.lua
+	# Nullable.lua
+	# Random.lua
+	# SpatialDropoutX21.lua
+	# Zero.lua
+
+Ordered:
+	# 2017-06-17: HighwayLayer.lua
+	# ????-??-??: BinaryStochastic.lua
+	# ????-??-??: SpatialDropoutX21.lua
+	# ????-??-??: AddGaussian.lua
+	# ????-??-??: Nullable.lua
+	# ????-??-??: Random.lua
+	# ????-??-??: Zero.lua
