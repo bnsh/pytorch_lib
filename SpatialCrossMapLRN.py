@@ -45,7 +45,7 @@ class SpatialCrossMapLRN(nn.Module):
 			upper_bound = min(channels-1, channel+math.floor(self.size/2.0))
 
 			numerator = inp.select(1, channel)
-			denominator = torch.pow((self.k + (self.alpha/self.size) * torch.pow(inp.index_select(1, Variable(torch.arange(lower_bound, upper_bound+1).type(torch.LongTensor), requires_grad=False)), 2)).sum(1), self.beta)
+			denominator = torch.pow(self.k + (self.alpha/self.size) * (torch.pow(inp.index_select(1, Variable(torch.arange(lower_bound, upper_bound+1).type(torch.LongTensor), requires_grad=False)), 2)).sum(1), self.beta)
 			back = (numerator/denominator).unsqueeze(1)
 			channel_lrns.append(back)
 
