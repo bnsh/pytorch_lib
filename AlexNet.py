@@ -11,7 +11,7 @@ from SpatialCrossMapLRN import SpatialCrossMapLRN
 def conv1(dropout, transfer):
 	"""conv1 takes the image as input and outputs a feature map of size 96"""
 	mlp = nn.Sequential()
-	mlp.add_module("conv2d", nn.Conv2d(3, 96, (11, 11), (4, 4)))
+	mlp.add_module("conv2d", nn.Conv2d(3, 96, (11, 11), (4, 4), padding=2))
 	mlp.add_module("transfer", transfer())
 	mlp.add_module("lrn", SpatialCrossMapLRN(5, 0.0001, 0.75))
 	mlp.add_module("max_pool", nn.MaxPool2d((3, 3), (2, 2)))
