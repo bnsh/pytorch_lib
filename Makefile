@@ -11,10 +11,9 @@ BINS=\
 	ImageUtil_cext/_ImageUtil_cext.so
 
 all: $(BINS)
-	/usr/bin/python test_image_util.py
 
 clean:
-	/bin/rm -fr $(OBJS) ImageUtil_cext
+	/bin/rm -fr $(OBJS) ImageUtil_cext *.pyc
 
 $(BINS): $(OBJS) image_util_build.py
 	ls -l $(OBJS)

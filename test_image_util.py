@@ -6,7 +6,7 @@ import sys
 import numpy as np
 import torch
 from PIL import Image
-from ImageUtil import ImageUtil
+from pytorchlib.ImageUtil import ImageUtil
 
 #pylint: disable=too-many-locals
 def main(args):
