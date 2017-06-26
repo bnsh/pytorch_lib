@@ -9,7 +9,7 @@ import math
 import numpy as np
 import torch
 from torch.autograd import Variable
-from SpatialCrossMapLRN import SpatialCrossMapLRN
+from pytorchlib.SpatialCrossMapLRN import SpatialCrossMapLRN
 
 def simple_json(filehandle, indentlevel, nparray):
 	indentstr = "\t" * indentlevel

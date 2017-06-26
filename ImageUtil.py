@@ -4,7 +4,7 @@
 
 import random
 import torch
-import pytorchlib.ImageUtil_cext as ImageUtil_cext
+from . import ImageUtil_cext
 
 class ImageUtil(object):
 	def __init__(self):
