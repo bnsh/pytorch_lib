@@ -6,7 +6,7 @@ with some minor changes."""
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
-from SpatialCrossMapLRN import SpatialCrossMapLRN
+from pytorchlib.SpatialCrossMapLRN import SpatialCrossMapLRN
 
 def conv1(dropout, transfer):
 	"""conv1 takes the image as input and outputs a feature map of size 96"""

@@ -14,6 +14,7 @@ _always_ output 0 and if you pass a 2 to it, it will _always_ output
 a 1! Caveat emptor and all that.
 """
 
+import torch.nn as nn
 from torch.autograd.function import Function
 
 class BinaryStochastic(Function):
@@ -34,3 +35,14 @@ class BinaryStochastic(Function):
 	def backward(self, *raw_grad_output):
 		grad_output = raw_grad_output
 		return grad_output
+
+class BinaryStochasticLayer(nn.Module):
+	def __init__(self, loval=0, hival=1):
+		super(BinaryStochasticLayer, self).__init__()
+		self.loval = loval
+		self.hival = hival
+
+	def forward(self, *args):
+		tensor, = args
+		binary_stochastic = BinaryStochastic(self.training)
+		return self.loval + binary_stochastic(tensor) * (self.hival-self.loval)
