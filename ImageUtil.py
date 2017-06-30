@@ -28,7 +28,7 @@ class ImageUtil(object):
 		if randomize:
 			return_value = self.transform_random(images)
 		else:
-			return_value = self.transform_tile(images)
+			return_value = self.transform_center(images)
 		return return_value
 
 
@@ -89,6 +89,37 @@ class ImageUtil(object):
 					cmatrix[0, 2] = -top
 					cmatrix[1, 2] = -left
 					conversions.append(cmatrix)
+
+		inputbatch = torch.stack(subimages, 0).cuda()
+		outputbatch = torch.zeros(len(subimages), outsz, outsz, 3).cuda()
+		conversion_matrix = torch.stack(conversions, 0).cuda()
+
+		#pylint: disable=no-member
+		ImageUtil_cext.ImageUtil_transform(self.iuptr, False, inputbatch, outputbatch, conversion_matrix)
+		del inputbatch
+
+		return outputbatch, conversion_matrix, images
+
+	#pylint: disable=too-many-locals
+	def transform_center(self, orig_images):
+		assert self.iuptr is not None
+		subimages = []
+		images = []
+		conversions = []
+		outsz = 224
+		for qidx in xrange(0, len(orig_images)):
+			image = orig_images[qidx]
+			height = image.size(0)
+			width = image.size(1)
+
+			top = int(0.05 * height)
+			left = int(0.05 * width)
+			images.append(image)
+			subimages.append(image[top:(int(top+0.9*height)), left:(int(left+0.9*width)), :])
+			cmatrix = torch.eye(3)
+			cmatrix[0, 2] = -top
+			cmatrix[1, 2] = -left
+			conversions.append(cmatrix)
 
 		inputbatch = torch.stack(subimages, 0).cuda()
 		outputbatch = torch.zeros(len(subimages), outsz, outsz, 3).cuda()
