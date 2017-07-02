@@ -90,7 +90,7 @@ class ImageUtil(object):
 					cmatrix[1, 2] = -left
 					conversions.append(cmatrix)
 
-		inputbatch = torch.stack(subimages, 0).cuda()
+		inputbatch = torch.stack(subimages, 0).float().cuda()
 		outputbatch = torch.zeros(len(subimages), ImageUtil.outsz, ImageUtil.outsz, 3).cuda()
 		conversion_matrix = torch.stack(conversions, 0).cuda()
 
@@ -120,7 +120,7 @@ class ImageUtil(object):
 			cmatrix[1, 2] = -left
 			conversions.append(cmatrix)
 
-		inputbatch = torch.stack(subimages, 0).cuda()
+		inputbatch = torch.stack(subimages, 0).float().cuda() # We need to convert these to floats
 		outputbatch = torch.zeros(len(subimages), ImageUtil.outsz, ImageUtil.outsz, 3).cuda()
 		conversion_matrix = torch.stack(conversions, 0).cuda()
 
