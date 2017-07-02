@@ -10,11 +10,9 @@ template <class T> class scratch {
 	public:
 		scratch<T>(int sz) : _size(sz), _space(NULL) {
 			_space = (T *)nppsMalloc_8u(sizeof(T) * _size);
-			fprintf(stderr, "%s: %d: gpumalloc(%lu)\n", __FILE__, __LINE__, sizeof(T) * _size);
 		}
 		
 		~scratch<T>() {
-			fprintf(stderr, "%s: %d: gpufree(%lu)\n", __FILE__, __LINE__, sizeof(T) * _size);
 			_size = -1;
 			nppsFree(_space); _space = NULL;
 		}

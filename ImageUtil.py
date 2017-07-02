@@ -7,6 +7,10 @@ import torch
 from . import ImageUtil_cext
 
 class ImageUtil(object):
+	# class variables
+	insz = 256
+	outsz = 224
+
 	def __init__(self):
 		#pylint: disable=no-member
 		self.iuptr = ImageUtil_cext.ImageUtil()
@@ -36,28 +40,26 @@ class ImageUtil(object):
 	def transform_random(self, images):
 		assert self.iuptr is not None
 # We need to grab random 384x384 crops of images.
-		insz = 256
-		outsz = 224
-		inputbatch = torch.zeros(len(images), insz, insz, 3).cuda()
-		outputbatch = torch.zeros(len(images), outsz, outsz, 3).cuda()
+		inputbatch = torch.zeros(len(images), ImageUtil.insz, ImageUtil.insz, 3).cuda()
+		outputbatch = torch.zeros(len(images), ImageUtil.outsz, ImageUtil.outsz, 3).cuda()
 		conversion_matrix = torch.eye(3).resize_(1, 3, 3).repeat(len(images), 1, 1).cuda()
 
 		for i in xrange(0, len(images)):
-			assert images[i].size()[0] >= insz
-			assert images[i].size()[1] >= insz
+			assert images[i].size()[0] >= ImageUtil.insz
+			assert images[i].size()[1] >= ImageUtil.insz
 			thresh = 0.5
 			mnval = 0-thresh
 			mxval = 1+thresh
 			randomy = min(max(mnval + random.random() * (mxval-mnval), 0), 1)
 			assert (0 <= randomy) and (randomy <= 1)
-			scaledy = int(randomy * (images[i].size()[0]-insz))
+			scaledy = int(randomy * (images[i].size()[0]-ImageUtil.insz))
 
 			randomx = min(max(mnval + random.random() * (mxval-mnval), 0), 1)
 			assert (0 <= randomx) and (randomx <= 1)
-			scaledx = int(randomx * (images[i].size()[1]-insz))
+			scaledx = int(randomx * (images[i].size()[1]-ImageUtil.insz))
 			conversion_matrix[i, 0, 2] = -scaledy
 			conversion_matrix[i, 1, 2] = -scaledx
-			inputbatch[i, :, :, :].copy_(images[i][scaledy:(scaledy+insz), scaledx:(scaledx+insz), :])
+			inputbatch[i, :, :, :].copy_(images[i][scaledy:(scaledy+ImageUtil.insz), scaledx:(scaledx+ImageUtil.insz), :])
 
 
 		#pylint: disable=no-member
@@ -70,28 +72,26 @@ class ImageUtil(object):
 		subimages = []
 		images = []
 		conversions = []
-		insz = 256
-		outsz = 224
 		for qidx in xrange(0, len(orig_images)):
 			image = orig_images[qidx]
 			height = image.size(0)
 			width = image.size(1)
-			squaresw = (width / insz) + 1
-			squaresh = (height / insz) + 1
+			squaresw = (width / ImageUtil.insz) + 1
+			squaresh = (height / ImageUtil.insz) + 1
 
 			for i in xrange(0, squaresh):
-				top = i * (height - insz) / (squaresh-1)
+				top = i * (height - ImageUtil.insz) / (squaresh-1)
 				for j in xrange(0, squaresw):
-					left = j * (width - insz) / (squaresw-1)
+					left = j * (width - ImageUtil.insz) / (squaresw-1)
 					images.append(image)
-					subimages.append(image[top:(top+insz), left:(left+insz), :])
+					subimages.append(image[top:(top+ImageUtil.insz), left:(left+ImageUtil.insz), :])
 					cmatrix = torch.eye(3)
 					cmatrix[0, 2] = -top
 					cmatrix[1, 2] = -left
 					conversions.append(cmatrix)
 
 		inputbatch = torch.stack(subimages, 0).cuda()
-		outputbatch = torch.zeros(len(subimages), outsz, outsz, 3).cuda()
+		outputbatch = torch.zeros(len(subimages), ImageUtil.outsz, ImageUtil.outsz, 3).cuda()
 		conversion_matrix = torch.stack(conversions, 0).cuda()
 
 		#pylint: disable=no-member
@@ -106,7 +106,6 @@ class ImageUtil(object):
 		subimages = []
 		images = []
 		conversions = []
-		outsz = 224
 		for qidx in xrange(0, len(orig_images)):
 			image = orig_images[qidx]
 			height = image.size(0)
@@ -122,7 +121,7 @@ class ImageUtil(object):
 			conversions.append(cmatrix)
 
 		inputbatch = torch.stack(subimages, 0).cuda()
-		outputbatch = torch.zeros(len(subimages), outsz, outsz, 3).cuda()
+		outputbatch = torch.zeros(len(subimages), ImageUtil.outsz, ImageUtil.outsz, 3).cuda()
 		conversion_matrix = torch.stack(conversions, 0).cuda()
 
 		#pylint: disable=no-member
