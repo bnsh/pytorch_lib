@@ -15,6 +15,7 @@ class Nullable(nn.Module):
 	def forward(self, *rawdata):
 		indicators = rawdata[0]["indicators"]
 		data = rawdata[0]["data"]
+		assert (indicators.is_cuda and data.is_cuda) or not(indicators.is_cuda or data.is_cuda)
 		# So. First, extract all the data
 		nonzero = Variable(indicators.data.squeeze().nonzero().squeeze(), requires_grad=False)
 		if nonzero.dim() > 0:
@@ -22,7 +23,7 @@ class Nullable(nn.Module):
 			size = list(output.size())
 			size[0] = len(indicators)
 
-			returnvalue = Variable(torch.zeros(size))
+			returnvalue = Variable(torch.zeros(size)).type_as(data)
 			self.filler(self.training, returnvalue)
 			returnvalue.index_copy_(0, nonzero, output)
 		else:
@@ -31,11 +32,11 @@ class Nullable(nn.Module):
 			# have been.
 			dummy_size = list(data.size())
 			dummy_size[0] = 1 # Let's just send one in
-			dummy_input = Variable(torch.zeros(dummy_size), requires_grad=False)
-			dummy_output = self.real_module(dummy_input)
+			dummy_data = Variable(torch.zeros(dummy_size), requires_grad=False).type_as(data)
+			dummy_output = self.real_module(dummy_data)
 			size = list(dummy_output.size())
 			size[0] = len(indicators)
-			returnvalue = Variable(torch.zeros(size))
+			returnvalue = Variable(torch.zeros(size)).type_as(data)
 			self.filler(self.training, returnvalue)
 
 		return returnvalue
