@@ -7,19 +7,19 @@ import torch.nn.functional as F
 
 class HighwayLayer(nn.Module):
 	# pylint: disable=too-many-instance-attributes
-	def __init__(self, num_layers, width, transfer, bias, dropout):
+	def __init__(self, num_layers, width, transfer_class, bias, dropout):
 		# pylint: disable=too-many-arguments
 		super(HighwayLayer, self).__init__()
 		self.num_layers = num_layers
 		self.width = width
-		self.transfer = transfer
+		self.transfer_class = transfer_class
 		self.bias = bias
 		self.dropout = dropout
 
 		self.dropouts = [nn.Dropout(dropout) for i in xrange(0, num_layers)]
 		self.gate_linears = [nn.Linear(width, width) for i in xrange(0, num_layers)]
 		self.transfer_linears = [nn.Linear(width, width) for i in xrange(0, num_layers)]
-		self.transfer_functions = [transfer for i in xrange(0, num_layers)]
+		self.transfer_functions = [transfer_class() for i in xrange(0, num_layers)]
 
 		for i in xrange(0, num_layers):
 			setattr(self, "dropouts[%d]" % (i), self.dropouts[i])

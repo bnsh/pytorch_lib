@@ -16,9 +16,9 @@ https://code.google.com/p/cuda-convnet2/wiki/LayerParams#Local_response_normaliz
 """
 
 import math
-from torch.autograd import Variable
 import torch
 import torch.nn as nn
+from torch.autograd import Variable
 
 class SpatialCrossMapLRN(nn.Module):
 	def __init__(self, size, alpha=0.0001, beta=0.75, k=1):
@@ -45,7 +45,10 @@ class SpatialCrossMapLRN(nn.Module):
 			upper_bound = min(channels-1, channel+math.floor(self.size/2.0))
 
 			numerator = inp.select(1, channel)
-			denominator = torch.pow(self.k + (self.alpha/self.size) * (torch.pow(inp.index_select(1, Variable(torch.arange(lower_bound, upper_bound+1).type(torch.LongTensor), requires_grad=False)), 2)).sum(1), self.beta)
+			indices = Variable(torch.arange(lower_bound, upper_bound+1).long())
+			if inp.is_cuda:
+				indices = indices.cuda()
+			denominator = torch.pow(self.k + (self.alpha/self.size) * (torch.pow(inp.index_select(1, indices), 2)).sum(1), self.beta)
 			back = (numerator/denominator).unsqueeze(1)
 			channel_lrns.append(back)
 

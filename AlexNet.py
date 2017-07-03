@@ -37,8 +37,13 @@ as 256 features."""
 		def forward(self, *args):
 			data, = args
 
-			path1 = self.conv1(data.index_select(1, Variable(torch.arange(0, 48).type(torch.LongTensor), requires_grad=False)))
-			path2 = self.conv2(data.index_select(1, Variable(torch.arange(48, 96).type(torch.LongTensor), requires_grad=False)))
+			indices_0_48 = Variable(torch.arange(0, 48).long(), requires_grad=False)
+			indices_48_96 = Variable(torch.arange(48, 96).long(), requires_grad=False)
+			if data.is_cuda:
+				indices_0_48 = indices_0_48.cuda()
+				indices_48_96 = indices_48_96.cuda()
+			path1 = self.conv1(data.index_select(1, indices_0_48))
+			path2 = self.conv2(data.index_select(1, indices_48_96))
 
 			full = torch.cat((path1, path2), 1) # index 1 are the features
 			return_value = self.transfer(full)
@@ -72,8 +77,13 @@ def conv4(dropout, transfer):
 		def forward(self, *args):
 			data, = args
 
-			path1 = self.conv1(data.index_select(1, Variable(torch.arange(0, 192).type(torch.LongTensor), requires_grad=False)))
-			path2 = self.conv2(data.index_select(1, Variable(torch.arange(192, 384).type(torch.LongTensor), requires_grad=False)))
+			indices_0_192 = Variable(torch.arange(0, 192).long(), requires_grad=False)
+			indices_192_384 = Variable(torch.arange(192, 384).long(), requires_grad=False)
+			if data.is_cuda:
+				indices_0_192 = indices_0_192.cuda()
+				indices_192_384 = indices_192_384.cuda()
+			path1 = self.conv1(data.index_select(1, indices_0_192))
+			path2 = self.conv2(data.index_select(1, indices_192_384))
 
 			full = torch.cat((path1, path2), 1) # index 1 are the features
 			return_value = self.transfer(full)
@@ -100,8 +110,13 @@ def conv5(dropout, transfer):
 		def forward(self, *args):
 			data, = args
 
-			path1 = self.conv1(data.index_select(1, Variable(torch.arange(0, 192).type(torch.LongTensor), requires_grad=False)))
-			path2 = self.conv2(data.index_select(1, Variable(torch.arange(192, 384).type(torch.LongTensor), requires_grad=False)))
+			indices_0_192 = Variable(torch.arange(0, 192).long(), requires_grad=False)
+			indices_192_384 = Variable(torch.arange(192, 384).long(), requires_grad=False)
+			if data.is_cuda:
+				indices_0_192 = indices_0_192.cuda()
+				indices_192_384 = indices_192_384.cuda()
+			path1 = self.conv1(data.index_select(1, indices_0_192))
+			path2 = self.conv2(data.index_select(1, indices_192_384))
 
 			full = torch.cat((path1, path2), 1) # index 1 are the features
 			return_value = self.transfer(full)
@@ -123,7 +138,6 @@ def fc6(size, dropout, transfer):
 
 		def forward(self, *args):
 			data, = args
-			print data.size()
 			return_value = data.resize(data.size(0), data.size(1)*data.size(2)*data.size(3))
 			return_value = self.linear(return_value)
 			return_value = self.transfer(return_value)
