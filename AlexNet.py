@@ -11,7 +11,7 @@ from .SpatialCrossMapLRN import SpatialCrossMapLRN
 def conv1(dropout, transfer):
 	"""conv1 takes the image as input and outputs a feature map of size 96"""
 	mlp = nn.Sequential()
-	mlp.add_module("conv2d", nn.Conv2d(3, 96, (11, 11), (4, 4), padding=2))
+	mlp.add_module("conv2d", nn.Conv2d(3, 96, (11, 11), (4, 4), padding=0))
 	mlp.add_module("transfer", transfer())
 	mlp.add_module("lrn", SpatialCrossMapLRN(5, 0.0001, 0.75))
 	mlp.add_module("max_pool", nn.MaxPool2d((3, 3), (2, 2)))
@@ -70,7 +70,6 @@ def conv4(dropout, transfer):
 			self.transfer = transfer
 			self.conv1 = nn.Conv2d(192, 192, (3, 3), (1, 1), (1, 1))
 			self.conv2 = nn.Conv2d(192, 192, (3, 3), (1, 1), (1, 1))
-			self.lrn = SpatialCrossMapLRN(5, 0.0001, 0.75)
 			self.dropout = nn.Dropout2d(dropout)
 			self.transfer = transfer()
 
@@ -87,7 +86,6 @@ def conv4(dropout, transfer):
 
 			full = torch.cat((path1, path2), 1) # index 1 are the features
 			return_value = self.transfer(full)
-			return_value = self.lrn(return_value)
 			return_value = self.dropout(return_value)
 
 			return return_value
@@ -102,7 +100,6 @@ def conv5(dropout, transfer):
 			self.transfer = transfer
 			self.conv1 = nn.Conv2d(192, 128, (3, 3), (1, 1), (1, 1))
 			self.conv2 = nn.Conv2d(192, 128, (3, 3), (1, 1), (1, 1))
-			self.lrn = SpatialCrossMapLRN(5, 0.0001, 0.75)
 			self.maxpooling = nn.MaxPool2d((3, 3), (2, 2))
 			self.dropout = nn.Dropout2d(dropout)
 			self.transfer = transfer()
@@ -120,7 +117,6 @@ def conv5(dropout, transfer):
 
 			full = torch.cat((path1, path2), 1) # index 1 are the features
 			return_value = self.transfer(full)
-			return_value = self.lrn(return_value)
 			return_value = self.maxpooling(return_value)
 			return_value = self.dropout(return_value)
 
