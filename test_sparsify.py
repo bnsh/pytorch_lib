@@ -1,15 +1,14 @@
 #! /usr/bin/python
 
-import sys
-import os
+"""This tests the Sparsify module"""
+
 import torch
-import torch.nn as nn
 from torch.autograd import Variable
 from Sparsify import Sparsify
 
 def main():
 	sparsify = Sparsify(k=2, replacement=-1)
-	data = Variable(torch.arange(0,10).resize_(1,10))
+	data = Variable(torch.arange(0, 10).resize_(1, 10))
 	print data
 	print sparsify(data)
 
