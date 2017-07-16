@@ -3,8 +3,10 @@
 """This tests the Normalize method."""
 
 import torch
+import torch.nn as nn
 from torch.autograd import Variable
 from Normalize import Normalize
+from Sparsify import Sparsify
 
 def floatrange(low, high, increment):
 	curr = low
@@ -21,6 +23,14 @@ def main():
 		lp = lpnorm(data)
 		lpverify = torch.pow(lp, p).sum(1)
 		assert 0.9999 <= lpverify and lpverify <= 1.0001
+
+	raw = Variable(torch.rand(10,10))
+	combined = nn.Sequential(
+		Sparsify(k=4, replacement=0),
+		Normalize(p=1)
+	)
+	probs = combined(raw)
+	print probs
 
 if __name__ == "__main__":
 	main()
