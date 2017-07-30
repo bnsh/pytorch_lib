@@ -2,13 +2,23 @@
 
 """This tests SpatialCrossMapLRN.
    I have verified that my numpy version computes the same values as
-   the LuaTorch SpatialCrossMapLRN."""
+   the LuaTorch SpatialCrossMapLRN.
+   2017-07-30 - Actually, while _close_ this _doesn't_ unfortunately match the
+                values from the torch version. I'm giving up tho, because it seems
+		like I can't _exactly_ duplicate the torch7 version while keeping with
+		the "Variable" concept. (Basically, the old one didn't have to worry
+		about Variable, because it did the derivative directly, so it could
+		just do things like copy values and replace values etc, at will.)
+		My way while not preserving the exact values, doesn't require me
+		to implement backward as well.
+"""
 
 import sys
 import math
 import numpy as np
 import torch
 from torch.autograd import Variable
+from pytorchlib.random_source import random_source
 from pytorchlib.SpatialCrossMapLRN import SpatialCrossMapLRN
 
 def simple_json(filehandle, indentlevel, nparray):
@@ -49,11 +59,13 @@ def main(_):
 	features = 10
 	height = 10
 	width = 10
-	inp = np.arange(0, minibatches*features*height*width).reshape(minibatches, features, height, width)
+
+	grab = random_source(12345, 16777216)
+	inp = grab(minibatches*features*height*width).resize_(minibatches, features, height, width)
 
 	scmlrn = SpatialCrossMapLRN(size, alpha, beta, k)
-	np_out = my_scmlrn(size, alpha, beta, k, inp)
-	sc_out = scmlrn(Variable(torch.DoubleTensor(inp))).data.numpy()
+	np_out = my_scmlrn(size, alpha, beta, k, inp.numpy())
+	sc_out = scmlrn(Variable(inp)).data.numpy()
 	print np.power((np_out - sc_out), 2).max()
 
 	with open("/tmp/np.json", "w") as filehandle:

@@ -1,5 +1,8 @@
 #! /usr/local/torch/install/bin/th
 
+package.cpath = string.format("./simile12_common/?.so;%s/src/torch7-libv2/?.so", os.getenv("HOME")) .. ";" .. package.cpath
+package.path = string.format("./simile12_common/?.lua;%s/src/torch7-libv2/?.lua", os.getenv("HOME")) .. ";" .. package.path
+local random_source = require "random_source"
 require "nn"
 
 function fprintf(fh, fmt, ...)
@@ -37,8 +40,10 @@ function main()
 	local height = 10
 	local width = 10
 
-	local inp = torch.range(0, minibatches*features*height*width-1):reshape(minibatches, features, height, width)
-	local lua_scmlrn = nn.SpatialCrossMapLRN(size, alpha, beta, k)
+	local grab = random_source(12345, 16777216)
+
+	local inp = grab(minibatches*features*height*width):reshape(minibatches, features, height, width)
+	local lua_scmlrn = nn.SpatialCrossMapLRN(size, alpha, beta, k):float()
 	local lua_out = lua_scmlrn:forward(inp)
 
 	local fh = io.open("/tmp/lua.json", "w")
