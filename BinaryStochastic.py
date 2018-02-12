@@ -18,13 +18,9 @@ import torch.nn as nn
 from torch.autograd.function import Function
 
 class BinaryStochastic(Function):
-	def __init__(self, training):
-		super(BinaryStochastic, self).__init__()
-		self.training = training
-
-	def forward(self, *rawinp):
-		inp, = rawinp
-		if self.training:
+	@staticmethod
+	def forward(ctx, inp, training=True):
+		if training:
 			rnd = inp.clone()
 			rnd.uniform_(0, 1)
 			out = rnd.lt(inp).type_as(inp)
@@ -32,9 +28,10 @@ class BinaryStochastic(Function):
 			out = inp.ge(0.5).type_as(inp)
 		return out
 
-	def backward(self, *raw_grad_output):
-		grad_output = raw_grad_output
-		return grad_output
+	@staticmethod
+	def backward(ctx, *grad_outputs):
+		returned_grad_output = grad_outputs
+		return returned_grad_output
 
 class BinaryStochasticLayer(nn.Module):
 	def __init__(self, loval=0, hival=1):
@@ -44,5 +41,5 @@ class BinaryStochasticLayer(nn.Module):
 
 	def forward(self, *args):
 		tensor, = args
-		binary_stochastic = BinaryStochastic(self.training)
-		return self.loval + binary_stochastic(tensor) * (self.hival-self.loval)
+		binary_stochastic = BinaryStochastic.apply
+		return self.loval + binary_stochastic(tensor, self.training) * (self.hival-self.loval)

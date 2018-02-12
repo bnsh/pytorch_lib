@@ -10,7 +10,7 @@ from PIL import Image
 import torch
 import torch.nn.functional as F
 from torch.autograd import Variable
-from pytorchlib.AlexNet import AlexNet
+from .pytorchlib.AlexNet import AlexNet
 
 def read_string(packedfp):
 	sizebytes = packedfp.read(4)

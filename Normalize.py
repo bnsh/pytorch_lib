@@ -19,4 +19,3 @@ class Normalize(nn.Module):
 
 		normalized = torch.pow(torch.sum(torch.pow(inp, self.p), self.dim), 1.0/self.p).clamp(min=self.eps).expand_as(inp)
 		return inp / normalized
-		
