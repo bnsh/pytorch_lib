@@ -18,8 +18,9 @@ import torch.nn as nn
 from torch.autograd.function import Function
 
 class BinaryStochastic(Function):
+	#pylint: disable=arguments-differ
 	@staticmethod
-	def forward(ctx, inp, training=True):
+	def forward(ctx, inp, training):
 		if training:
 			rnd = inp.clone()
 			rnd.uniform_(0, 1)
@@ -27,6 +28,7 @@ class BinaryStochastic(Function):
 		else:
 			out = inp.ge(0.5).type_as(inp)
 		return out
+	#pylint: enable=arguments-differ
 
 	@staticmethod
 	def backward(ctx, *grad_outputs):

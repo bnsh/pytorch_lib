@@ -11,6 +11,16 @@ def main():
 	extra_objects = [os.path.join(this_dir, x) for x in ["ImageUtil.o", "ImageUtil_impl.o"]]
 	library_dirs = ["/usr/local/cuda/lib64"]
 	libraries = ["nppi", "npps"]
+	libraries = [ \
+		"nppidei_static", \
+		"nppc_static", \
+		"culibos", \
+		"nppig_static", \
+		"nppicc_static", \
+		"nppist_static", \
+		"npps_static", \
+		"nppif_static", \
+	]
 	headers = ["ImageUtil.H"]
 	defines = [("WITH_CUDA", None)]
 	with_cuda = True
