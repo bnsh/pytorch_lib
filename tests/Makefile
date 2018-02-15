@@ -7,4 +7,4 @@ pylint: $(PYLINT)
 
 .%.pylint: %.py
 	/usr/local/bin/pylint -r n $(^)
-	> $(@)
+	/usr/bin/touch $(@)
