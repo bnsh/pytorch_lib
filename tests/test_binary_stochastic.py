@@ -24,8 +24,11 @@ def main():
 
 	opt = optim.Adam(net.parameters(), lr=0.001)
 	loss = None
+	epoch = 0
 
 	while loss is None or loss.data.cpu()[0] > 0.01:
+		epoch += 1
+		opt.zero_grad()
 		net.train(True)
 		out = net(data)
 		loss = F.mse_loss(out, targets)
@@ -35,6 +38,7 @@ def main():
 		out = net(data)
 		loss = F.mse_loss(out, targets)
 
+	print epoch
 	print out
 	print loss.data.cpu()[0]
 
