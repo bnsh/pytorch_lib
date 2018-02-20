@@ -33,7 +33,7 @@ class BinaryStochastic(Function):
 	@staticmethod
 	def backward(ctx, *grad_outputs):
 		returned_grad_output = grad_outputs
-		return returned_grad_output
+		return returned_grad_output[0], None
 
 class BinaryStochasticLayer(nn.Module):
 	def __init__(self, loval=0, hival=1):

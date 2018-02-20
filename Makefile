@@ -13,12 +13,14 @@ OBJS=$(SRCS:C=o)
 BINS=\
 	ImageUtil_cext/_ImageUtil_cext.so
 
-all: $(BINS) pylint
+all: pylint $(BINS)
 
 clean:
 	/bin/rm -fr $(OBJS) ImageUtil_cext *.pyc $(PYLINT)
 
 pylint: $(PYLINT)
+
+ImageUtil.py: $(BINS)
 
 $(BINS): $(OBJS) image_util_build.py
 	ls -l $(OBJS)
