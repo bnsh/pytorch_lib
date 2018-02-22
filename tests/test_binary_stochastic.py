@@ -11,8 +11,6 @@ from torch.autograd import Variable
 from pytorchlib.BinaryStochastic import BinaryStochasticLayer
 
 def main():
-	batchsz = 3
-
 	net = nn.Sequential()
 	net.add_module("linear1", nn.Linear(2, 3))
 	net.add_module("binary_stochastic1", nn.Tanh())
