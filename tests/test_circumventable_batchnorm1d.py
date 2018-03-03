@@ -1,5 +1,8 @@
 #! /usr/bin/python
 
+"""This program tests the CircumventableBatchNorm1D module. (I'm not actually using it
+   anymore, but still..)"""
+
 import torch
 from torch.autograd import Variable
 
@@ -11,9 +14,9 @@ def test_disabled():
 	cbn = CircumventableBatchNorm1D(4)
 	before = cbn.running_mean.clone()
 	cbn.stop_running_stats()
-	out = cbn(data)
+	_ = cbn(data)
 	after = cbn.running_mean.clone()
-	assert(torch.pow(before-after, 2).sum() == 0)
+	assert torch.pow(before-after, 2).sum() == 0
 
 def test_enabled():
 	data = Variable(torch.randn(20, 4))
@@ -21,9 +24,9 @@ def test_enabled():
 	cbn = CircumventableBatchNorm1D(4)
 	before = cbn.running_mean.clone()
 	cbn.start_running_stats()
-	out = cbn(data)
+	_ = cbn(data)
 	after = cbn.running_mean.clone()
-	assert(torch.pow(before-after, 2).sum() > 0)
+	assert torch.pow(before-after, 2).sum() > 0
 
 def main():
 	test_disabled()
