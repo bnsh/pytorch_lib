@@ -1,5 +1,7 @@
 #! /usr/bin/python
 
+"""Tests the Debug module"""
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -19,7 +21,7 @@ def main():
 	opt = optim.Adamax(xornn.parameters(), lr=0.01)
 
 	for epoch in xrange(0, 1):
-		logits = xornn(data) 
+		logits = xornn(data)
 		loss = F.binary_cross_entropy_with_logits(logits, targets)
 		loss.backward()
 		opt.step()
