@@ -17,4 +17,4 @@ class AddGaussian(nn.Module):
 		if self.training:
 			noise = Variable(data.data.clone().normal_(self.mean, self.sigma), requires_grad=False)
 			return data + noise
-		return data
+		return 1.0 * data
