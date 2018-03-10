@@ -37,5 +37,5 @@ class ResidualLayer(nn.Module):
 
 			return_value = return_value + inp
 
-		return return_value
+		return 1 * return_value
 # pylint: enable=too-many-instance-attributes
