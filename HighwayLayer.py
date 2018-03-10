@@ -37,4 +37,4 @@ class HighwayLayer(nn.Module):
 			sigmoid_values = F.sigmoid(gate_inputs + self.bias)
 			return_value = (sigmoid_values * self.transfer_functions[i](transfer_inputs)) + ((1-sigmoid_values) * return_value)
 
-		return return_value
+		return 1 * return_value

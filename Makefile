@@ -15,8 +15,16 @@ BINS=\
 
 all: pylint $(BINS)
 
+checkin:
+	/usr/bin/ci -l -m- -t- $(PYTHON) $(SRCS)
+
 clean:
 	/bin/rm -fr $(OBJS) ImageUtil_cext *.pyc $(PYLINT)
+
+push: all checkin
+	/usr/bin/rsync -avz -e ssh --progress /home/binesh/src/pytorchlib/ gpu:src/pytorchlib/
+	/usr/bin/rsync -avz -e ssh --progress /home/binesh/src/pytorchlib/ dgx:src/pytorchlib/
+	/usr/bin/rsync -avz -e ssh --progress /home/binesh/src/pytorchlib/ t450s:src/pytorchlib/
 
 pylint: $(PYLINT)
 

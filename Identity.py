@@ -6,7 +6,7 @@
 import torch.nn as nn
 
 class Identity(nn.Module):
-	def forward(self, *rawdata):
-		inp, = rawdata
-
-		return inp
+	#pylint: disable=arguments-differ
+	def forward(self, inp):
+		return 1.0 * inp
+	#pylint: disable=arguments-differ
