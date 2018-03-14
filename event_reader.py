@@ -10,6 +10,8 @@
    read the events written to by tensorboardX.
 """
 
+import os
+import re
 import struct
 from tensorboardX.src.event_pb2 import Event
 from tensorboardX.record_writer import masked_crc32c
@@ -36,3 +38,25 @@ def event_reader(filepointer):
 		evt = Event()
 		evt.ParseFromString(data)
 		yield evt
+
+def last_epoch(dname):
+	def traverse(dname, func, **kw):
+		if os.path.isdir(dname):
+			children = [os.path.join(dname, child) for child in sorted(os.listdir(dname))]
+			for child in children:
+				traverse(child, func, **kw)
+		else:
+			func(dname, **kw)
+
+	max_epoch = [None]
+	def update_max_epoch(fname):
+		basename = os.path.basename(fname)
+		match = re.match(r'^events.out.tfevents.[0-9]+.(.*)$', basename)
+		if match is not None:
+			with open(fname, "r") as filep:
+				for event in event_reader(filep):
+					if max_epoch[0] is None or (event.step is not None and event.step >= max_epoch[0]):
+						max_epoch[0] = event.step
+
+	traverse(dname, update_max_epoch)
+	return max_epoch[0]
