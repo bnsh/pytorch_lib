@@ -13,6 +13,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
+from .WeightNormalizedLinear import WeightNormalizedLinear
 
 class HighwayLSTMLayer(nn.Module):
 	# pylint: disable=too-many-instance-attributes
@@ -25,7 +26,7 @@ class HighwayLSTMLayer(nn.Module):
 		self.dropout = dropout
 
 		self.dropouts = [nn.Dropout(dropout) for i in xrange(0, num_layers)]
-		self.gate_linears = [nn.Linear(width, width) for i in xrange(0, num_layers)]
+		self.gate_linears = [WeightNormalizedLinear(width, width) for i in xrange(0, num_layers)]
 		self.lstms = [nn.LSTMCell(width, width) for i in xrange(0, num_layers)]
 
 		for i in xrange(0, num_layers):

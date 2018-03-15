@@ -7,6 +7,7 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 from .SpatialCrossMapLRN import SpatialCrossMapLRN
+from .WeightNormalizedLinear import WeightNormalizedLinear
 
 def conv1(dropout, transfer):
 	"""conv1 takes the image as input and outputs a feature map of size 96"""
@@ -128,7 +129,7 @@ def fc6(size, dropout, transfer):
 	class AlexNetFC6(nn.Module):
 		def __init__(self, size, dropout, transfer):
 			super(AlexNetFC6, self).__init__()
-			self.linear = nn.Linear(256*6*6, size)
+			self.linear = WeightNormalizedLinear(256*6*6, size)
 			self.dropout = nn.Dropout(dropout)
 			self.transfer = transfer()
 
@@ -144,7 +145,7 @@ def fc6(size, dropout, transfer):
 
 def fc7(size, dropout, transfer):
 	mlp = nn.Sequential()
-	mlp.add_module("linear", nn.Linear(size, 4096))
+	mlp.add_module("linear", WeightNormalizedLinear(size, 4096))
 	mlp.add_module("transfer", transfer())
 	mlp.add_module("dropout", nn.Dropout(dropout))
 
@@ -152,7 +153,7 @@ def fc7(size, dropout, transfer):
 
 def fc8(size):
 	mlp = nn.Sequential()
-	mlp.add_module("linear", nn.Linear(4096, size))
+	mlp.add_module("linear", WeightNormalizedLinear(4096, size))
 
 	return mlp
 
