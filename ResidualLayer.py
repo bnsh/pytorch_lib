@@ -6,7 +6,6 @@
 
 import torch.nn as nn
 import torch.nn.functional as F
-from .WeightNormalizedLinear import WeightNormalizedLinear
 
 # pylint: disable=too-many-instance-attributes
 class ResidualLayer(nn.Module):
@@ -17,8 +16,8 @@ class ResidualLayer(nn.Module):
 		self.transfer_class = transfer_class
 		self.dropout = dropout
 
-		self.linear_1 = [WeightNormalizedLinear(width, width) for i in xrange(0, num_layers)]
-		self.linear_2 = [WeightNormalizedLinear(width, width) for i in xrange(0, num_layers)]
+		self.linear_1 = [nn.Linear(width, width) for i in xrange(0, num_layers)]
+		self.linear_2 = [nn.Linear(width, width) for i in xrange(0, num_layers)]
 		self.transfer_functions = [transfer_class() for i in xrange(0, num_layers)]
 
 		for i in xrange(0, num_layers):
