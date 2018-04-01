@@ -26,7 +26,7 @@ def main():
 	with_cuda = True
 
 	ffi = create_extension( \
-		"ImageUtil_cext", \
+		"imageutil_cext", \
 		headers=headers, \
 		sources=sources, \
 		extra_objects=extra_objects, \

@@ -6,7 +6,7 @@
 import torch
 from torch.autograd import Variable
 
-from pytorchlib.CircumventableBatchNorm1D import CircumventableBatchNorm1D
+from pytorchlib.circumventablebatchnorm1d import CircumventableBatchNorm1D
 
 def test_disabled():
 	data = Variable(torch.randn(20, 4))

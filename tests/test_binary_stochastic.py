@@ -8,7 +8,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.autograd import Variable
 
-from pytorchlib.BinaryStochastic import BinaryStochasticLayer
+from pytorchlib.binarystochastic import BinaryStochasticLayer
 
 def main():
 	net = nn.Sequential()

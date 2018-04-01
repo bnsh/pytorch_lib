@@ -5,8 +5,8 @@
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
-from pytorchlib.Normalize import Normalize
-from pytorchlib.Sparsify import Sparsify
+from pytorchlib.normalize import Normalize
+from pytorchlib.sparsify import Sparsify
 
 def floatrange(low, high, increment):
 	curr = low

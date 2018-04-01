@@ -27,4 +27,5 @@ class WeightNormalizedLinear(nn.Module):
 	def forward(self, *args):
 		inp, = args
 
-		return (torch.matmul(self.weight_g * self.weight_v / torch.norm(self.weight_v, p=2, dim=0, keepdim=True), inp.transpose(1, 0)) + self.bias).transpose(1, 0)
+		weight = self.weight_g * (self.weight_v / torch.norm(self.weight_v, p=2, dim=0, keepdim=True))
+		return (torch.matmul(weight, inp.transpose(1, 0)) + self.bias).transpose(1, 0)

@@ -4,7 +4,6 @@
 
 import torch.nn as nn
 import torch.nn.functional as F
-from .WeightNormalizedLinear import WeightNormalizedLinear
 
 class HighwayLayer(nn.Module):
 	# pylint: disable=too-many-instance-attributes
@@ -18,8 +17,8 @@ class HighwayLayer(nn.Module):
 		self.dropout = dropout
 
 		self.dropouts = [nn.Dropout(dropout) for i in xrange(0, num_layers)]
-		self.gate_linears = [WeightNormalizedLinear(width, width) for i in xrange(0, num_layers)]
-		self.transfer_linears = [WeightNormalizedLinear(width, width) for i in xrange(0, num_layers)]
+		self.gate_linears = [nn.Linear(width, width) for i in xrange(0, num_layers)]
+		self.transfer_linears = [nn.Linear(width, width) for i in xrange(0, num_layers)]
 		self.transfer_functions = [transfer_class() for i in xrange(0, num_layers)]
 
 		for i in xrange(0, num_layers):

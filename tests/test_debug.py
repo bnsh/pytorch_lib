@@ -7,7 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 import torch.optim as optim
-from pytorchlib.Debug import Debug
+from pytorchlib.debug import Debug
 
 def main():
 	xornn = nn.Sequential()

@@ -4,25 +4,25 @@
 
 import random
 import torch
-from . import ImageUtil_cext
+from . import imageutil_cext
 
 class ImageUtil(object):
 	def __init__(self, insz=256, outsz=227):
 		#pylint: disable=no-member
-		self.iuptr = ImageUtil_cext.ImageUtil()
+		self.iuptr = imageutil_cext.ImageUtil()
 		self.insz = insz
 		self.outsz = outsz
 
 	def __enter__(self):
 		#pylint: disable=no-member
 		if self.iuptr is not None:
-			ImageUtil_cext.ImageUtil_destroy(self.iuptr)
-		self.iuptr = ImageUtil_cext.ImageUtil()
+			imageutil_cext.ImageUtil_destroy(self.iuptr)
+		self.iuptr = imageutil_cext.ImageUtil()
 		return self
 
 	def __exit__(self, _, value, traceback):
 		#pylint: disable=no-member
-		ImageUtil_cext.ImageUtil_destroy(self.iuptr)
+		imageutil_cext.ImageUtil_destroy(self.iuptr)
 		self.iuptr = None
 
 	def transform(self, randomize, images):
@@ -61,7 +61,7 @@ class ImageUtil(object):
 
 
 		#pylint: disable=no-member
-		ImageUtil_cext.ImageUtil_transform(self.iuptr, True, inputbatch, outputbatch, conversion_matrix)
+		imageutil_cext.ImageUtil_transform(self.iuptr, True, inputbatch, outputbatch, conversion_matrix)
 		return outputbatch, conversion_matrix, images
 
 	#pylint: disable=too-many-locals
@@ -93,7 +93,7 @@ class ImageUtil(object):
 		conversion_matrix = torch.stack(conversions, 0).cuda()
 
 		#pylint: disable=no-member
-		ImageUtil_cext.ImageUtil_transform(self.iuptr, False, inputbatch, outputbatch, conversion_matrix)
+		imageutil_cext.ImageUtil_transform(self.iuptr, False, inputbatch, outputbatch, conversion_matrix)
 		del inputbatch
 
 		return outputbatch, conversion_matrix, images
@@ -123,7 +123,7 @@ class ImageUtil(object):
 		conversion_matrix = torch.stack(conversions, 0).cuda()
 
 		#pylint: disable=no-member
-		ImageUtil_cext.ImageUtil_transform(self.iuptr, False, inputbatch, outputbatch, conversion_matrix)
+		imageutil_cext.ImageUtil_transform(self.iuptr, False, inputbatch, outputbatch, conversion_matrix)
 		del inputbatch
 
 		return outputbatch, conversion_matrix, images

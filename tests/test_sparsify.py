@@ -4,7 +4,7 @@
 
 import torch
 from torch.autograd import Variable
-from pytorchlib.Sparsify import Sparsify
+from pytorchlib.sparsify import Sparsify
 
 def main():
 	sparsify = Sparsify(k=2, replacement=-1)

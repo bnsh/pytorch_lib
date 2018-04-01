@@ -2,7 +2,7 @@ CC=g++
 CFLAGS=-pthread -DNDEBUG -g -fwrapv -O2 -Wall -Werror -fno-strict-aliasing -Wdate-time -D_FORTIFY_SOURCE=2 -g -fstack-protector-strong -Wformat -Werror=format-security -fPIC -DWITH_CUDA -I/usr/local/lib/python2.7/dist-packages/torch/utils/ffi/../../lib/include -I/usr/local/lib/python2.7/dist-packages/torch/utils/ffi/../../lib/include/TH -I/usr/local/lib/python2.7/dist-packages/torch/utils/ffi/../../lib/include/THC -I/usr/local/cuda/include -I/usr/include/python2.7
 
 PYTHON=$(wildcard *.py */*.py)
-PYLINT=$(filter-out ImageUtil_cext/.%.pylint, $(join $(dir $(PYTHON)), $(addprefix ., $(notdir $(PYTHON:py=pylint)))))
+PYLINT=$(filter-out imageutil_cext/.%.pylint, $(join $(dir $(PYTHON)), $(addprefix ., $(notdir $(PYTHON:py=pylint)))))
 
 SRCS=\
 	ImageUtil.C \
@@ -11,7 +11,7 @@ SRCS=\
 OBJS=$(SRCS:C=o)
 
 BINS=\
-	ImageUtil_cext/_ImageUtil_cext.so
+	imageutil_cext/_imageutil_cext.so
 
 all: pylint $(BINS)
 
@@ -19,7 +19,7 @@ checkin:
 	/usr/bin/ci -l -m- -t- $(PYTHON) $(SRCS)
 
 clean:
-	/bin/rm -fr $(OBJS) ImageUtil_cext *.pyc $(PYLINT)
+	/bin/rm -fr $(OBJS) imageutil_cext *.pyc $(PYLINT)
 
 push: all checkin
 	/usr/bin/rsync -avz -e ssh --progress /home/binesh/src/pytorchlib/ gpu:src/pytorchlib/

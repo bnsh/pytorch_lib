@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
-from pytorchlib.HighwayLayer import HighwayLayer
+from pytorchlib.highwaylayer import HighwayLayer
 
 def report(module, grad_input, grad_output):
 	print module, len(grad_input), len(grad_output)

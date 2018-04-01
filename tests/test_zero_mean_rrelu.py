@@ -6,7 +6,7 @@
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
-from pytorchlib.ZeroMeanRReLU import ZeroMeanRReLU
+from pytorchlib.zeromeanrrelu import ZeroMeanRReLU
 
 def main():
 	data = Variable(torch.randn(1024, 1024))
