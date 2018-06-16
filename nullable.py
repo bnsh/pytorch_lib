@@ -16,5 +16,5 @@ class Nullable(nn.Module):
 		indicator = inp["indicator"]
 		data = inp["data"]
 		output = self.module(data)
-		random = Variable(self.fillmethod(self.training, output.shape).type_as(data.data))
+		random = Variable(self.fillmethod(self.training, output.shape).type_as(data.detach()))
 		return output * indicator + (1-indicator) * random

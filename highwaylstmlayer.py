@@ -45,18 +45,18 @@ class HighwayLSTMLayer(nn.Module):
 		c_0 = Variable(torch.zeros(batchsz, self.width), requires_grad=False).type_as(return_value)
 
 		# So, first resize to be linear. Is this valid?
-		resized = return_value.resize(seqsz * batchsz, datasz)
+		resized = return_value.reshape(seqsz * batchsz, datasz)
 
 		for i in xrange(0, self.num_layers):
 			droppedout = self.dropouts[i](resized)
 			gate_inputs = self.gate_linears[i](droppedout)
-			rnn_inputs = droppedout.resize(seqsz, batchsz, self.width)
+			rnn_inputs = droppedout.reshape(seqsz, batchsz, self.width)
 			print rnn_inputs.size(), h_0.size(), c_0.size()
 			transfer_inputs = self.lstms[i](rnn_inputs, (h_0, c_0))[0] # are the hidden states
-			transfer_inputs = transfer_inputs.resize(seqsz * batchsz, self.width)
+			transfer_inputs = transfer_inputs.reshape(seqsz * batchsz, self.width)
 			sigmoid_values = F.sigmoid(gate_inputs + self.bias)
 			resized = (sigmoid_values * transfer_inputs) + ((1-sigmoid_values) * resized)
 
-		return_value = resized.resize(seqsz, batchsz, self.width)
+		return_value = resized.reshape(seqsz, batchsz, self.width)
 
 		return return_value

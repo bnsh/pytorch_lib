@@ -134,7 +134,7 @@ def fc6(size, dropout, transfer):
 
 		def forward(self, *args):
 			data, = args
-			return_value = data.resize(data.size(0), data.size(1)*data.size(2)*data.size(3))
+			return_value = data.reshape(data.size(0), data.size(1)*data.size(2)*data.size(3))
 			return_value = self.linear(return_value)
 			return_value = self.transfer(return_value)
 			return_value = self.dropout(return_value)

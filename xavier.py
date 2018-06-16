@@ -6,8 +6,8 @@ import torch.nn.init as init
 
 def xavier(params):
 	for param in params.parameters():
-		if param.data.ndimension() == 2:
-			init.xavier_uniform(param.data)
+		if param.detach().ndimension() == 2:
+			init.xavier_uniform(param.detach())
 		else:
-			param.data.fill_(1.0)
+			param.detach().fill_(1.0)
 	return params

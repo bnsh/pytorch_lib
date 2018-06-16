@@ -7,7 +7,7 @@ import torch
 from . import imageutil_cext
 
 class ImageUtil(object):
-	def __init__(self, insz=256, outsz=227):
+	def __init__(self, insz=360, outsz=227):
 		#pylint: disable=no-member
 		self.iuptr = imageutil_cext.ImageUtil()
 		self.insz = insz

@@ -7,7 +7,7 @@ from torch.autograd import Variable
 
 def correlation_coefficient(data_a, data_b):
 	# first, compute the mean and standard deviation of each?
-	epsilon = Variable(torch.FloatTensor([1e-6]).type_as(data_a.data))
+	epsilon = Variable(torch.FloatTensor([1e-6]).type_as(data_a.detach()))
 	mean_a = torch.mean(data_a, dim=0, keepdim=True)
 	mean_b = torch.mean(data_b, dim=0, keepdim=True)
 
