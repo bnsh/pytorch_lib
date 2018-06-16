@@ -25,7 +25,7 @@ def main():
 		loss = F.binary_cross_entropy_with_logits(logits, targets)
 		loss.backward()
 		opt.step()
-		print "epoch=%.7f loss=%.7f" % (epoch, loss.cpu().data[0])
+		print "epoch=%.7f loss=%.7f" % (epoch, float(loss.cpu().detach()))
 
 if __name__ == "__main__":
 	main()

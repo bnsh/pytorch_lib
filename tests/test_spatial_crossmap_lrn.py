@@ -64,7 +64,7 @@ def main(_):
 
 	scmlrn = SpatialCrossMapLRN(size, alpha, beta, k)
 	np_out = my_scmlrn(size, alpha, beta, k, inp.numpy())
-	sc_out = scmlrn(Variable(inp)).data.numpy()
+	sc_out = scmlrn(Variable(inp)).detach().numpy()
 	print np.power((np_out - sc_out), 2).max()
 
 	with open("/tmp/np.json", "w") as filehandle:

@@ -38,8 +38,8 @@ def read_mlp(label, filename, mlp):
 		_ = read_int(packedfp) # Dimensions, but we're not using that either.
 		size = read_long(packedfp)
 		data = torch.Tensor(np.array(read_data(packedfp, size)))
-		mlp.weight.data.copy_(data[0:mlp.weight.numel()])
-		mlp.bias.data.copy_(data[mlp.weight.numel():])
+		mlp.weight.detach().copy_(data[0:mlp.weight.numel()])
+		mlp.bias.detach().copy_(data[mlp.weight.numel():])
 		print label, (mlp.weight.numel() + mlp.bias.numel()) - len(data)
 
 #pylint: disable=too-many-locals
@@ -55,8 +55,8 @@ def classify(mlp, labels, filename):
 	imgtensor = Variable(torch.FloatTensor(np.array(img224).astype(np.float) - 127.5).permute(2, 0, 1).unsqueeze(0), requires_grad=False)
 	results = F.softmax(mlp(imgtensor))
 	probabilities, indices = results.squeeze().sort(descending=True)
-	probabilities = probabilities.data.numpy().tolist()
-	indices = indices.data.numpy().tolist()
+	probabilities = probabilities.detach().numpy().tolist()
+	indices = indices.detach().numpy().tolist()
 	zipped = [(labels[x[0]], x[0], x[1]) for x in zip(indices, probabilities)]
 	with open("/tmp/gg.json", "w") as jsonfp:
 		json.dump(zipped, jsonfp, indent=4, sort_keys=True)

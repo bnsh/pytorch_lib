@@ -24,8 +24,8 @@ def classify(mlp, labels, filename):
 	imgtensor = Variable(torch.FloatTensor(np.array(img227) * 2.0 / 255.0 - 1.0).permute(2, 0, 1).unsqueeze(0), requires_grad=False)
 	results = F.softmax(mlp(imgtensor))
 	probabilities, indices = results.squeeze().sort(descending=True)
-	probabilities = probabilities.data.numpy().tolist()
-	indices = indices.data.numpy().tolist()
+	probabilities = probabilities.detach().numpy().tolist()
+	indices = indices.detach().numpy().tolist()
 	zipped = [(labels[x[0]], x[0], x[1]) for x in zip(indices, probabilities)]
 	with open("/tmp/gg.json", "w") as jsonfp:
 		json.dump(zipped, jsonfp, indent=4, sort_keys=True)

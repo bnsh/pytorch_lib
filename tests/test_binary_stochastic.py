@@ -24,7 +24,7 @@ def main():
 	loss = None
 	epoch = 0
 
-	while loss is None or loss.data.cpu()[0] > 0.01:
+	while loss is None or float(loss.detach().cpu()) > 0.01:
 		epoch += 1
 		opt.zero_grad()
 		net.train(True)
@@ -38,7 +38,7 @@ def main():
 
 	print epoch
 	print out
-	print loss.data.cpu()[0]
+	print float(loss.detach().cpu())
 
 if __name__ == "__main__":
 	main()
