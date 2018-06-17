@@ -9,7 +9,7 @@ from PIL import Image
 import torch
 import torch.nn.functional as F
 from torch.autograd import Variable
-from pytorchlib.resnet import resnet152
+from pytorchlib.resnet import resnet34
 
 #pylint: disable=too-many-locals
 def classify(mlp, labels, filename):
@@ -42,8 +42,9 @@ def classify(mlp, labels, filename):
 	img.close()
 
 def main(argv):
-	resnet = resnet152(pretrained=True)
+	resnet = resnet34(pretrained=True)
 	resnet.train(False)
+	print resnet
 	labels = []
 	with open("/usr/local/caffe/data/ilsvrc12/synset_words.txt", "r") as wordsfp:
 		for line in wordsfp:
@@ -52,7 +53,6 @@ def main(argv):
 		classify(resnet, labels, filename)
 
 	torch.save(resnet, "/tmp/myresnet.pth")
-	print resnet
 
 if __name__ == "__main__":
 	main(sys.argv[1:])

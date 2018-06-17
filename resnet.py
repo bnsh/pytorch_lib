@@ -179,7 +179,7 @@ class ResNet(nn.Module):
 
 # Ok, actually, that's pretty damned good. Fine, I hate it, but I'm keeping it.
 
-		inp = (((inp + 1.0) / 2.0) - self.mean) / self.std
+		inp = (((inp + 1.0) / 2.0) - self.mean.type_as(inp)) / self.std.type_as(inp)
 
 		out = self.conv1(inp)
 		out = self.bn1(out)
