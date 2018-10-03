@@ -2,128 +2,112 @@
 
 """This class performs image transformations useful for a convnet"""
 
-import random
+import numpy as np
 import torch
-from . import imageutil_cext
+import cv2
+from albumentations import (
+	Compose,
+	OneOf,
+	IAAAdditiveGaussianNoise,
+	GaussNoise,
+	MotionBlur,
+	MedianBlur,
+	Blur,
+	Rotate,
+	ShiftScaleRotate,
+	OpticalDistortion,
+	GridDistortion,
+	IAAPiecewiseAffine,
+	CLAHE,
+	IAASharpen,
+	IAAEmboss,
+	RandomContrast,
+	RandomBrightness,
+	RandomGamma,
+	HueSaturationValue,
+	Resize
+)
 
 class ImageUtil(object):
 	def __init__(self, insz=360, outsz=227):
-		#pylint: disable=no-member
-		self.iuptr = imageutil_cext.ImageUtil()
 		self.insz = insz
 		self.outsz = outsz
 
 	def __enter__(self):
-		#pylint: disable=no-member
-		if self.iuptr is not None:
-			imageutil_cext.ImageUtil_destroy(self.iuptr)
-		self.iuptr = imageutil_cext.ImageUtil()
 		return self
 
 	def __exit__(self, _, value, traceback):
-		#pylint: disable=no-member
-		imageutil_cext.ImageUtil_destroy(self.iuptr)
-		self.iuptr = None
+		pass
 
 	def transform(self, randomize, images):
 		return_value = None
 		if randomize:
-			return_value = self.transform_random(images)
+			return_value = self._transform_random(images)
 		else:
-			return_value = self.transform_center(images)
+			return_value = self._transform_center(images)
 		return return_value
 
 
-	#pylint: disable=too-many-locals
-	def transform_random(self, images):
-		assert self.iuptr is not None
-# We need to grab random 384x384 crops of images.
-		inputbatch = torch.zeros(len(images), self.insz, self.insz, 3).cuda()
-		outputbatch = torch.zeros(len(images), self.outsz, self.outsz, 3).cuda()
-		conversion_matrix = torch.eye(3).resize_(1, 3, 3).repeat(len(images), 1, 1).cuda()
+	def _transform_generic(self, images, prob):
+		"""So, we assume these images are batched torch values, scaled from -1..1
+			We need to convert them to numpy arrays.
+		"""
 
-		for i in xrange(0, len(images)):
-			assert images[i].size()[0] >= self.insz
-			assert images[i].size()[1] >= self.insz
-			thresh = 0.5
-			mnval = 0-thresh
-			mxval = 1+thresh
-			randomy = min(max(mnval + random.random() * (mxval-mnval), 0), 1)
-			assert (0 <= randomy) and (randomy <= 1)
-			scaledy = int(randomy * (images[i].size()[0]-self.insz))
+		batchsz, height, width, channels = images.shape
+		assert height == width, "We assume squares as inputs."
+		assert channels == 3, "We assume RGB images."
+		assert -1.0 <= images.min() and images.max() <= 1.0
 
-			randomx = min(max(mnval + random.random() * (mxval-mnval), 0), 1)
-			assert (0 <= randomx) and (randomx <= 1)
-			scaledx = int(randomx * (images[i].size()[1]-self.insz))
-			conversion_matrix[i, 0, 2] = -scaledy
-			conversion_matrix[i, 1, 2] = -scaledx
-			inputbatch[i, :, :, :].copy_(images[i][scaledy:(scaledy+self.insz), scaledx:(scaledx+self.insz), :])
+		# make these the images that albumentation requires.
+		npimages = ((images.cpu().numpy() + 1.0) * 255.0 / 2.0).astype(np.uint8)
+		outputs = np.zeros((batchsz, self.outsz, self.outsz, channels))
 
+		ops = Compose( \
+			[ \
+				Compose( \
+					[ \
+						OneOf([ \
+							IAAAdditiveGaussianNoise(p=1.0), \
+							GaussNoise(p=1.0), \
+						], p=0.5), \
+						OneOf([ \
+							MotionBlur(p=1.0), \
+							MedianBlur(blur_limit=3, p=1.0), \
+							Blur(blur_limit=3, p=1.0), \
+						], p=0.5), \
+						RandomGamma(p=0.5), \
+						Rotate(limit=45, interpolation=cv2.INTER_CUBIC, p=0.5), \
+						ShiftScaleRotate(shift_limit=0.0625, scale_limit=0.2, rotate_limit=45, interpolation=cv2.INTER_CUBIC, p=0.5), \
+						OneOf([ \
+							OpticalDistortion(interpolation=cv2.INTER_CUBIC, p=1.0), \
+							GridDistortion(interpolation=cv2.INTER_CUBIC, p=1.0), \
+							IAAPiecewiseAffine(p=1.0), \
+						], p=0.5), \
+						OneOf([ \
+							CLAHE(clip_limit=2, p=1.0), \
+							IAASharpen(p=1.0), \
+							IAAEmboss(p=1.0), \
+							RandomContrast(p=1.0), \
+							RandomBrightness(p=1.0), \
+						], p=0.5), \
+						HueSaturationValue(p=0.5), \
+					], \
+					p=prob \
+				) \
+			], \
+			postprocessing_transforms=[Resize(self.outsz, self.outsz, interpolation=cv2.INTER_CUBIC)], \
+			p=1.0 \
+		)
 
-		#pylint: disable=no-member
-		imageutil_cext.ImageUtil_transform(self.iuptr, True, inputbatch, outputbatch, conversion_matrix)
-		return outputbatch, conversion_matrix, images
+		# So, the output of ops, should be a dictionary containing an image
+		for idx in range(0, batchsz):
+			vvv = ops(image=npimages[idx])["image"]
+			outputs[idx] = vvv
 
-	#pylint: disable=too-many-locals
-	def transform_tile(self, orig_images):
-		assert self.iuptr is not None
-		subimages = []
-		images = []
-		conversions = []
-		for qidx in xrange(0, len(orig_images)):
-			image = orig_images[qidx]
-			height = image.size(0)
-			width = image.size(1)
-			squaresw = (width / self.insz) + 1
-			squaresh = (height / self.insz) + 1
+		return torch.Tensor(outputs).type_as(images)
 
-			for i in xrange(0, squaresh):
-				top = i * (height - self.insz) / (squaresh-1)
-				for j in xrange(0, squaresw):
-					left = j * (width - self.insz) / (squaresw-1)
-					images.append(image)
-					subimages.append(image[top:(top+self.insz), left:(left+self.insz), :])
-					cmatrix = torch.eye(3)
-					cmatrix[0, 2] = -top
-					cmatrix[1, 2] = -left
-					conversions.append(cmatrix)
+	def _transform_random(self, images):
+		return self._transform_generic(images, prob=0.5)
 
-		inputbatch = torch.stack(subimages, 0).float().cuda()
-		outputbatch = torch.zeros(len(subimages), self.outsz, self.outsz, 3).cuda()
-		conversion_matrix = torch.stack(conversions, 0).cuda()
-
-		#pylint: disable=no-member
-		imageutil_cext.ImageUtil_transform(self.iuptr, False, inputbatch, outputbatch, conversion_matrix)
-		del inputbatch
-
-		return outputbatch, conversion_matrix, images
-
-	#pylint: disable=too-many-locals
-	def transform_center(self, orig_images):
-		assert self.iuptr is not None
-		subimages = []
-		images = []
-		conversions = []
-		for qidx in xrange(0, len(orig_images)):
-			image = orig_images[qidx]
-			height = image.size(0)
-			width = image.size(1)
-
-			top = int(0.05 * height)
-			left = int(0.05 * width)
-			images.append(image)
-			subimages.append(image[top:(int(top+0.9*height)), left:(int(left+0.9*width)), :])
-			cmatrix = torch.eye(3)
-			cmatrix[0, 2] = -top
-			cmatrix[1, 2] = -left
-			conversions.append(cmatrix)
-
-		inputbatch = torch.stack(subimages, 0).float().cuda() # We need to convert these to floats
-		outputbatch = torch.zeros(len(subimages), self.outsz, self.outsz, 3).cuda()
-		conversion_matrix = torch.stack(conversions, 0).cuda()
-
-		#pylint: disable=no-member
-		imageutil_cext.ImageUtil_transform(self.iuptr, False, inputbatch, outputbatch, conversion_matrix)
-		del inputbatch
-
-		return outputbatch, conversion_matrix, images
+	def _transform_center(self, images):
+		return self._transform_generic(images, prob=0.0)
