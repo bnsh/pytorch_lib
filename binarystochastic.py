@@ -17,7 +17,7 @@ a 1! Caveat emptor and all that.
 import torch.nn as nn
 from torch.autograd.function import Function
 
-class BinaryStochastic(Function):
+class BinaryStochasticRaw(Function):
 	#pylint: disable=arguments-differ
 	@staticmethod
 	def forward(ctx, inp, training):
@@ -35,13 +35,19 @@ class BinaryStochastic(Function):
 		returned_grad_output = grad_outputs
 		return returned_grad_output[0], None
 
-class BinaryStochasticLayer(nn.Module):
+class BinaryStochasticRawLayer(nn.Module):
 	def __init__(self, loval=0, hival=1):
-		super(BinaryStochasticLayer, self).__init__()
+		super(BinaryStochasticRawLayer, self).__init__()
 		self.loval = loval
 		self.hival = hival
 
 	def forward(self, *args):
 		tensor, = args
-		binary_stochastic = BinaryStochastic.apply
+		binary_stochastic = BinaryStochasticRaw.apply
 		return self.loval + binary_stochastic(tensor, self.training) * (self.hival-self.loval)
+
+class BinaryStochasticLayer(nn.Sequential):
+	def __init__(self, loval=0, hival=1):
+		super(BinaryStochasticLayer, self).__init__()
+		self.add_module("sigmoid", nn.Sigmoid())
+		self.add_module("binary_stochastic", BinaryStochasticRawLayer(loval, hival))
