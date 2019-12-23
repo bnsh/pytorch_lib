@@ -1,4 +1,5 @@
 #! /usr/bin/python
+# vim: expandtab shiftwidth=4 tabstop=4
 
 """BinaryStochastic interprets it's input as a probability
 between [0,1] and
@@ -18,36 +19,36 @@ import torch.nn as nn
 from torch.autograd.function import Function
 
 class BinaryStochasticRaw(Function):
-	#pylint: disable=arguments-differ
-	@staticmethod
-	def forward(ctx, inp, training):
-		if training:
-			rnd = inp.clone()
-			rnd.uniform_(0, 1)
-			out = rnd.lt(inp).type_as(inp)
-		else:
-			out = inp.ge(0.5).type_as(inp)
-		return out
-	#pylint: enable=arguments-differ
+    #pylint: disable=arguments-differ
+    @staticmethod
+    def forward(ctx, inp, training):
+        if training:
+            rnd = inp.clone()
+            rnd.uniform_(0, 1)
+            out = rnd.lt(inp).type_as(inp)
+        else:
+            out = inp.ge(0.5).type_as(inp)
+        return out
+    #pylint: enable=arguments-differ
 
-	@staticmethod
-	def backward(ctx, *grad_outputs):
-		returned_grad_output = grad_outputs
-		return returned_grad_output[0], None
+    @staticmethod
+    def backward(ctx, *grad_outputs):
+        returned_grad_output = grad_outputs
+        return returned_grad_output[0], None
 
 class BinaryStochasticRawLayer(nn.Module):
-	def __init__(self, loval=0, hival=1):
-		super(BinaryStochasticRawLayer, self).__init__()
-		self.loval = loval
-		self.hival = hival
+    def __init__(self, loval=0, hival=1):
+        super(BinaryStochasticRawLayer, self).__init__()
+        self.loval = loval
+        self.hival = hival
 
-	def forward(self, *args):
-		tensor, = args
-		binary_stochastic = BinaryStochasticRaw.apply
-		return self.loval + binary_stochastic(tensor, self.training) * (self.hival-self.loval)
+    def forward(self, *args):
+        tensor, = args
+        binary_stochastic = BinaryStochasticRaw.apply
+        return self.loval + binary_stochastic(tensor, self.training) * (self.hival-self.loval)
 
 class BinaryStochasticLayer(nn.Sequential):
-	def __init__(self, loval=0, hival=1):
-		super(BinaryStochasticLayer, self).__init__()
-		self.add_module("sigmoid", nn.Sigmoid())
-		self.add_module("binary_stochastic", BinaryStochasticRawLayer(loval, hival))
+    def __init__(self, loval=0, hival=1):
+        super(BinaryStochasticLayer, self).__init__()
+        self.add_module("sigmoid", nn.Sigmoid())
+        self.add_module("binary_stochastic", BinaryStochasticRawLayer(loval, hival))
