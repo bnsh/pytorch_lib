@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 # vim: expandtab shiftwidth=4 tabstop=4
 
 """Sparsify will take a vector and zero out all but the top k values in the input."""

@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 # vim: expandtab shiftwidth=4 tabstop=4
 
 """This program tests the CircumventableBatchNorm1D module. (I'm not actually using it

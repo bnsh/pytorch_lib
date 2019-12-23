@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 # vim: expandtab shiftwidth=4 tabstop=4
 
 """This will contain any stats stuff that I don't find in torch proper."""

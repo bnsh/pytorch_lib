@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 # vim: expandtab shiftwidth=4 tabstop=4
 
 """BinaryStochastic interprets it's input as a probability

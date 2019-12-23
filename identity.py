@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 # vim: expandtab shiftwidth=4 tabstop=4
 
 """Identity simply copies it's inputs. WHY?! Well. Sometimes it's useful to just

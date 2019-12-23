@@ -5,13 +5,12 @@
 
 import torch
 import torch.nn as nn
-from .linearnorm import LinearNorm
 
 class VAE(nn.Module):
     def __init__(self, in_features, out_features):
         super(VAE, self).__init__()
-        self.fc_mean = LinearNorm(in_features, out_features)
-        self.fc_logvariance = LinearNorm(in_features, out_features)
+        self.fc_mean = nn.Linear(in_features, out_features)
+        self.fc_logvariance = nn.Linear(in_features, out_features)
         self.mean = None
         self.logvariance = None
 
@@ -22,7 +21,10 @@ class VAE(nn.Module):
         self.logvariance = self.fc_logvariance(inps)
         std = torch.exp(self.logvariance/2.0)
 
-        random = torch.randn(self.mean.shape).type_as(inps)
+        if self.training:
+            random = torch.randn(self.mean.shape).type_as(inps)
+        else:
+            random = torch.zeros(self.mean.shape).type_as(inps)
         return self.mean + random * std
 
     def loss(self):

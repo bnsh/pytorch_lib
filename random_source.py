@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 # vim: expandtab shiftwidth=4 tabstop=4
 
 """This just reads a random_source as implemented in ../torch7-libv2/random_source.lua"""

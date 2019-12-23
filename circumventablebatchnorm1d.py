@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 # vim: expandtab shiftwidth=4 tabstop=4
 
 """This is basically BatchNorm1d, but, I want to be able to _sometimes_ preserve

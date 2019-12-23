@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 # vim: expandtab shiftwidth=4 tabstop=4
 
 """HighwayLayer implements the highway layer as specified in https://arxiv.org/pdf/1505.00387.pdf"""

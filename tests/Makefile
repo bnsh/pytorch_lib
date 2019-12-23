@@ -6,5 +6,5 @@ all: pylint
 pylint: $(PYLINT)
 
 .%.pylint: %.py
-	/usr/local/bin/pylint -r n $(^)
+	python3 -m pylint -r n $(^)
 	/usr/bin/touch $(@)
