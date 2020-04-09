@@ -23,7 +23,11 @@ class Attention(nn.Module):
         self.focus = None
 
     def forward(self, *args):
-        inp, hidden, *_ = args
+        if len(args[0]) == 2:
+            (inp, hidden), *_ = args
+        else:
+            inp, *_ = args
+            hidden = torch.zeros(inp.shape[0], self.hiddensz).type_as(inp)
         inpbatchsz, inpseqsz, inpsz_ = inp.shape
         hiddenbatchsz, hiddensz_ = hidden.shape
 
