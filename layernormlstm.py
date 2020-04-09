@@ -75,7 +75,7 @@ class LayerNormLSTM(nn.Module):
     #pylint: disable=arguments-differ,too-many-locals,invalid-name
     def forward(self, inps, hidden=None):
         if self.batch_first:
-            inps = inps.transpose(1, 0, 2)
+            inps = inps.permute(1, 0, 2)
         seq_len, batch_size, dummy_hidden_size = inps.size()  # supports TxNxH only
         num_directions = 2 if self.bidirectional else 1
         if hidden is None:
@@ -114,6 +114,6 @@ class LayerNormLSTM(nn.Module):
             cy = torch.stack(ct[-1])
 
         if self.batch_first:
-            y = y.transpose(1, 0, 2)
+            y = y.permute(1, 0, 2)
         return y, (hy, cy)
     #pylint: enable=arguments-differ,too-many-locals,invalid-name
