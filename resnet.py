@@ -161,7 +161,7 @@ class ResNet(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, *args):
-        inp = args[0]
+        inp, = args
 
 # from https://pytorch.org/docs/stable/torchvision/models.html
 # All pre-trained models expect input images normalized in the same way,

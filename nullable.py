@@ -3,8 +3,8 @@
 
 """Nullable allows a neural network to handle "null" inputs."""
 
+import torch
 import torch.nn as nn
-from torch.autograd import Variable
 
 class Nullable(nn.Module):
     def __init__(self, module, fillmethod):
@@ -15,7 +15,13 @@ class Nullable(nn.Module):
     def forward(self, *args):
         inp, = args
         indicator = inp["indicator"]
+        indices = indicator.flatten().nonzero(as_tuple=True)
         data = inp["data"]
-        output = self.module(data)
-        random = Variable(self.fillmethod(self.training, output.shape).type_as(data.detach()))
-        return output * indicator + (1-indicator) * random
+        if indices[0].shape[0] == 0:
+            partial = self.module(torch.randn(data[0:1].shape).type_as(data))
+        else:
+            partial = self.module(data[indices])
+        output = self.fillmethod(self.training, tuple(data.shape[:1] + partial.shape[1:])).type_as(data)
+        if indices[0].shape[0] > 0:
+            output[indices] = partial
+        return output

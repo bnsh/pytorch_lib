@@ -23,6 +23,7 @@ push: all checkin
 	/usr/bin/rsync -avz -e ssh --progress /home/binesh/src/pytorchlib/ dgx:src/pytorchlib/
 	/usr/bin/rsync -avz -e ssh --progress /home/binesh/src/pytorchlib/ t450s:src/pytorchlib/
 	/usr/bin/rsync -avz -e ssh --progress /home/binesh/src/pytorchlib/ p1gen2:src/pytorchlib/
+	/usr/bin/rsync -avz -e ssh --progress /home/binesh/src/pytorchlib/ som.hex21.com:src/pytorchlib/
 
 pylint: $(PYLINT3)
 

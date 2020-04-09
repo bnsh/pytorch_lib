@@ -24,7 +24,6 @@ class ResidualLayer(nn.Module):
 
         self.linear_2 = [nn.Linear(width, width) for i in range(0, num_layers)]
         self.layer_norms_2 = [nn.LayerNorm(width, eps=tfeps) for i in range(0, num_layers)]
-        self.transfer_functions_2 = [transfer_class() for i in range(0, num_layers)]
 
         for i in range(0, num_layers):
             setattr(self, "linear_1[%d]" % (i), self.linear_1[i])
@@ -33,7 +32,6 @@ class ResidualLayer(nn.Module):
 
             setattr(self, "linear_2[%d]" % (i), self.linear_2[i])
             setattr(self, "layer_norms_2[%d]" % (i), self.layer_norms_2[i])
-            setattr(self, "transfer_functions_2[%d]" % (i), self.transfer_functions_2[i])
 
     def forward(self, *data):
         return_value, = data
@@ -52,8 +50,5 @@ class ResidualLayer(nn.Module):
 
             return_value = return_value + inp
 
-            return_value = self.transfer_functions_2[i](return_value)
-
-
-        return 1 * return_value
+        return return_value
 # pylint: enable=too-many-instance-attributes

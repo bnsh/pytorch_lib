@@ -14,8 +14,16 @@
 import os
 import re
 import struct
-from tensorboardX.proto.event_pb2 import Event
-from tensorboardX.record_writer import masked_crc32c
+from tensorboard.compat.proto.event_pb2 import Event
+from .crc32c import crc32c
+
+# from https://github.com/lanpa/tensorboardX/blob/master/tensorboardX/record_writer.py
+def masked_crc32c(data):
+    val = u32(crc32c(data))
+    return u32(((val >> 15) | u32(val << 17)) + 0xa282ead8)
+
+def u32(val):
+    return val & 0xffffffff
 
 def event_reader(filepointer):
     while True:

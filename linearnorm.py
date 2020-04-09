@@ -21,14 +21,14 @@ class LinearNorm(nn.Sequential):
     #pylint: enable=too-many-arguments
 
 def main():
-    batchsz = 7
-    in_features = 11
-    out_features = 13
+    batchsz = 256
+    in_features = 2
+    out_features = 8
 
     data = torch.randn(batchsz, in_features)
     linearnorm = LinearNorm(in_features, out_features)
     out = linearnorm(data)
-    print(out.shape)
+    print(out)
 
 if __name__ == "__main__":
     main()
